@@ -1,5 +1,13 @@
+import sys
+
+from stats import sort_the_dict, symbol_counter, word_counter
+
+
 def main():
-    path_to_file = "./books/frankenstein.txt"
+    if len(sys.argv) != 2:
+        print("Usage: python3 main.py <path_to_book>")
+        sys.exit(1)
+    path_to_file = sys.argv[1]
     with open(path_to_file, 'r', encoding="utf-8") as f:
         file_contents = f.read()
 
@@ -10,45 +18,20 @@ def main():
     print(report(path_to_file, total_words, char_dict))
 
 
-def word_counter(string: str) -> int:
-    """Count all the words in a book."""
-    return len(string.split())
-
-
-def symbol_counter(string: str) -> dict:
-    """Count all the symbols available in text."""
-    symbol_dict = {}
-    for char in string:
-        char = char.lower()
-        if char in symbol_dict:
-            symbol_dict[char] += 1
-            continue
-        symbol_dict[char] = 1
-    return symbol_dict
-
-
-def sort_on(symbol_dict: dict) -> int:
-    """Required as a key for sorting."""
-    return symbol_dict["num"]
-
-
-def sort_the_dict(symbol_dict: dict) -> list[dict]:
-    """Make and sort a list of dicts by skipping non letters"""
-    output = [{"name": k, "num": v} for k, v in symbol_dict.items() if k.isalpha()]
-    output.sort(reverse=True, key=sort_on)
-    return output
-
-
-def report(book_path: str, total_words: int, symbol_dict: dict) -> str:
+def report(book_path: str, total_words: int, symbol_dict: list[dict[str, str]]) -> str:
     """Make a human-readable report on how many words and letters found"""
     centrify = 50
-    fill_sides_with = '-'
+    main_side_filler = '='
+    secondary_side_filler = '-'
 
-    report_message = f" Begin report of {book_path} ".center(centrify, fill_sides_with)
-    report_message += "\n" + f"{total_words} words found in the document\n"
+    report_message = " BookBot ".center(centrify, main_side_filler)
+    report_message += "\n" + f"Analysis of a book found at: {book_path}"
+    report_message += "\n" + " Word Count ".center(centrify, secondary_side_filler)
+    report_message += "\n" + f"{total_words} words found in the document"
+    report_message += "\n" + " Character Count ".center(centrify, secondary_side_filler)
     for entry in symbol_dict:
-        report_message += "\n" + f"The '{entry.get("name")}' character was found {entry.get("num")} times"
-    report_message += "\n" + " End report ".center(centrify, fill_sides_with)
+        report_message += "\n" + f"'{entry.get("name")}: {entry.get("num")}'"
+    report_message += "\n" + " End ".center(centrify, main_side_filler)
     return report_message
 
 
